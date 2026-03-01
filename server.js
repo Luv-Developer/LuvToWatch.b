@@ -32,7 +32,9 @@ app.use(cors({
     optionsSuccessStatus: 200
 }))
 
-app.options('*', cors())
+// remove explicit options route because '*' triggers a PathError in path-to-regexp
+// CORS middleware above already handles OPTIONS requests for all routes
+// app.options('*', cors())
 
 // Nodemailer Configuration 
 let smtptconfig = {
