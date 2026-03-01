@@ -25,11 +25,14 @@ app.use(express.static(path.join(__dirname,"public")))
 
 // Cors Configuration 
 app.use(cors({
-    origin:["https://luv-to-watch.vercel.app/"],
-    methods:["POST","GET"],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials:true
+    origin: ["https://luv-to-watch.vercel.app"], // Removed trailing slash
+    methods: ["POST", "GET", "OPTIONS"], // Added OPTIONS method
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true,
+    optionsSuccessStatus: 200
 }))
+
+app.options('*', cors())
 
 // Nodemailer Configuration 
 let smtptconfig = {
@@ -90,7 +93,7 @@ app.post("/ticket",async(req,res)=>{
                     quantity: movie.quantity
                 }
             }) ,
-            success_url:`http://localhost:${PORT}/success`,
+            success_url:`https://luvtowatch.onrender.com/success`,
             cancel_url: `http://localhost:${PORT}/cancel`
         })
         return res.json({url : session.url}).status(200)
