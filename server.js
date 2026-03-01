@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname,"public")))
 
 // Cors Configuration 
 app.use(cors({
-    origin:["http://localhost:5173"],
+    origin:["https://luv-to-watch.vercel.app/"],
     methods:["POST","GET"],
     credentials:true
 }))
