@@ -108,11 +108,6 @@ app.post("/ticket",async(req,res)=>{
 app.get("/success", async (req, res) => {
     try {
         let id = shortid.generate();
-        
-        // Generate QR code
-        const qrCode = await qrcode.toString(moviename, { type: "terminal" });
-        
-        // Create transporter with better config
         let transporter = nodemailer.createTransport({
             service: "gmail",
             host: "smtp.gmail.com",
@@ -149,6 +144,18 @@ app.get("/success", async (req, res) => {
         
     } catch (error) {
         console.error("Email error:", error);
+        // ✅ Send a response even if there's an error
+        return res.status(500).send(`
+            <html>
+                <body>
+                    <h1>Booking Confirmed but Email Failed</h1>
+                    <p>Your booking was successful but we couldn't send the confirmation email.</p>
+                    <p>Please contact support with your booking details.</p>
+                    <p>Error: ${error.message}</p>
+                    <a href="/">Return to Home</a>
+                </body>
+            </html>
+        `);
     }
 });
 
