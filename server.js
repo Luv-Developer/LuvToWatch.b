@@ -27,6 +27,7 @@ app.use(express.static(path.join(__dirname,"public")))
 app.use(cors({
     origin:["https://luv-to-watch.vercel.app/"],
     methods:["POST","GET"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials:true
 }))
 
