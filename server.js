@@ -105,39 +105,52 @@ app.post("/ticket",async(req,res)=>{
         return res.status(500).json(err)
     }
 })
+app.get("/success", async (req, res) => {
+    try {
+        let id = shortid.generate();
+        
+        // Generate QR code
+        const qrCode = await qrcode.toString(moviename, { type: "terminal" });
+        
+        // Create transporter with better config
+        let transporter = nodemailer.createTransport({
+            service: "gmail",
+            host: "smtp.gmail.com",
+            port: 587,
+            secure: false,
+            auth: {
+                user: process.env.MAIL,
+                pass: process.env.PASS
+            },
+            tls: {
+                rejectUnauthorized: false
+            }
+        });
 
-app.get("/success",(req,res)=>{
-    qrcode.toString(moviename,{type:"terminal"},(err,qr)=>{
-        newqr = qr
-    })
-    let id = shortid.generate()
-    let transporter = nodemailer.createTransport(smtptconfig)
-    let mailoption = {
-    from: process.env.MAIL, 
-    to: recieveremail,
-    subject: 'LuvToWatch | Movie Ticket', 
-    text: 'Movie Ticket Reservation',
-    html: `<h3>Transaction for the booking of ${moviename} has been successfully completed!</h3>
-    <h4>Venue: UNITY ONE CINEPOLIS (ROHINI)</h4>
-    <h4>Movie: <img src = "${movieimage}"></h4>
-    <h4>Seat Number: ${seatnumber}</h4>
-    <h4>Ticket Price: ${ticketprice}</h4>
-    <h4>Ticket Date: ${ticketdate}</h4>
-    <h4>Hall Number is 4</h4>
-    <p>Ticket id is ${id}</p>
-    <br><br>
-    <img src = "https://randomqr.com/assets/images/randomqr-256.png">
-    `
+        let mailoption = {
+            from: process.env.MAIL,
+            to: recieveremail,
+            subject: 'LuvToWatch | Movie Ticket',
+            text: 'Movie Ticket Reservation',
+            html: `<h3>Transaction for the booking of ${moviename} has been successfully completed!</h3>
+            <h4>Venue: UNITY ONE CINEPOLIS (ROHINI)</h4>
+            <h4>Movie: <img src="${movieimage}"></h4>
+            <h4>Seat Number: ${seatnumber}</h4>
+            <h4>Ticket Price: ${ticketprice}</h4>
+            <h4>Ticket Date: ${ticketdate}</h4>
+            <h4>Hall Number is 4</h4>
+            <p>Ticket id is ${id}</p>
+            <br><br>
+            <img src="https://randomqr.com/assets/images/randomqr-256.png">`
+        };
+
+        await transporter.sendMail(mailoption);
+        return res.render("success", { recieveremail });
+        
+    } catch (error) {
+        console.error("Email error:", error);
     }
-    transporter.sendMail(mailoption,(err,info)=>{
-        if(err){
-            return res.json(err).status(500)
-        }
-        else{
-            return res.render("success",{recieveremail})
-        }
-    })
-})
+});
 
 app.get("/test",(req,res)=>{
     qrcode.toCanvas()
